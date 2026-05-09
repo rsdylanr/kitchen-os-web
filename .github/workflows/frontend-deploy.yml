@@ -1,7 +1,7 @@
-name: KitchenOS Frontend Deployment
+name: KitchenOS Frontend CI/CD
 on:
   push:
-    branches: [main] # Triggers deployment on every push to main
+    branches: [main] # Triggers on push to main
 
 permissions:
   contents: write
@@ -10,22 +10,23 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install Dependencies
-        run: npm install # Generates the lockfile in the cloud if missing
+        run: npm ci # Ensures a clean, reproducible install from package-lock.json
 
-      - name: Build Application
+      - name: Build
         run: npm run build
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: dist # The output folder from Vite
-          branch: gh-pages # The branch GitHub Pages will serve from
+          folder: dist # Vite output directory
+          branch: gh-pages
